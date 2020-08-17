@@ -1,0 +1,52 @@
+{
+  "private": true,
+  "name": "jupyterlab_scheduler",
+  "version": "0.0.1",
+  "description": "UI for scheduling cron jobs",
+  "author": "Jovanni Hrnandez",
+  "main": "lib/plugin.js",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension"
+  ],
+  "jupyterlab": {
+    "extension": true
+  },
+  "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "prepare": "npm run build:lib && webpack",
+      "build:lib": "babel src --out-dir lib",
+      "watch": "echo 'here' && npm-run-all -p watch:*",
+      "watch:lib": "echo 'dawg' && babel src --out-dir lib --watch",
+      "watch:bundle": "echo 'bruh' && webpack --watch --mode=development"
+    },
+  "dependencies": {
+    "@jupyterlab/mainmenu": "^2.2.1",
+    "@lumino/widgets": "^1.13.4",
+    "core-js": "^3.1.0",
+    "@jupyter-widgets/base": "^2.0.1",
+    "@jupyter-widgets/controls": "^1.5.0",
+    "@jupyter-widgets/jupyterlab-manager": "^1.0.0",
+    "@jupyter-widgets/output": "^2.0.0",
+    "@jupyterlab/coreutils": "^4.2.1",
+    "@jupyterlab/outputarea": "^1.0.0",
+    "@jupyterlab/rendermime": "^2.2.1",
+    "@jupyterlab/services": "^5.2.1"
+  },
+  "devDependencies": {
+
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/plugin-transform-react-jsx": "^7.10.4",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^3.0.0",
+    "file-loader": "^4.0.0",
+    "npm-run-all": "^4.1.5",
+    "style-loader": "^0.23.1",
+    "url-loader": "^1.0.0",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.2.3"
+  }
+}
