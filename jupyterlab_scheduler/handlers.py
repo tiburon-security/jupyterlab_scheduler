@@ -25,7 +25,7 @@ class AllJobs(APIHandler):
                 if("jupyterlab_scheduler job" in job.comment):
 
                     try:
-                        command_match = re.search(r"(^.*?)(?:\s>)", job.command)
+                        command_match = re.search(r"(?:^.*\[Cron Running\]\"\s&&)(.*?)(?:\s>>)", job.command)
                         command = command_match.group(1)
 
                         log_file_match = re.search(r"(?:>\s)([\/A-Za-z_]+\.log)", job.command)
@@ -36,7 +36,7 @@ class AllJobs(APIHandler):
 
                         schedule_match = re.search(r"(((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7}", str(job))
                         schedule = schedule_match.group(0)
-                        
+
                         data.append({
                             "command": command,
                             "log_file": log_file,
@@ -47,8 +47,8 @@ class AllJobs(APIHandler):
 
                     except AttributeError:
                         # something epically failed and the cron isn't formatted to our pre-defined structure
-                        self.finish(json.dumps({"success": False}))
-                        return
+                        pass
+
             self.finish(json.dumps({
                 "success": True,
                 "data": data
@@ -70,21 +70,21 @@ class DeleteJob(APIHandler):
 
         input_data = self.get_json_body()
 
-        job_script = input_data["script"]
+        job_command = input_data["command"]
         job_schedule = input_data["schedule"]
 
         with CronTab(user=os.environ["USER"]) as cron:
 
             for job in cron:
-
                 try:
-                    script_match = re.search(r"(?:script:\s)(.*)", job.comment)
-                    script = script_match.group(1)
+
+                    command_match = re.search(r"(?:^.*\[Cron Running\]\"\s&&)(.*?)(?:\s>>)", job.command)
+                    command = command_match.group(1)
 
                     schedule_match = re.search(r"(((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7}", str(job))
                     schedule = schedule_match.group(0)
 
-                    if(job_schedule == schedule and job_script == script):
+                    if(job_schedule == schedule and job_command == command):
                         cron.remove(job)
                         self.finish(json.dumps({"success": True}))
                         return
@@ -97,7 +97,12 @@ class DeleteJob(APIHandler):
         return
         
 
+'''
+YOOOO
 
+UPDATE VIEW AND DELETE FUNCTIONS - COMMAND SYNTAX CHANGED
+
+'''
 class AddJob(APIHandler):
 
     @tornado.web.authenticated
@@ -107,22 +112,18 @@ class AddJob(APIHandler):
 
         schedule = input_data["schedule"]
         script = input_data["script"]
+        command = input_data["command"]
 
-        cleaned_script_name = re.sub(r"[\s\<\>\|\\\:\(\)\&\;]", '_', script)
+        cleaned_script_name = re.sub(r"[\.\s\<\>\|\\\:\(\)\&\;]", '_', script)
+        comment = "jupyterlab_scheduler job script: {}".format(script)
 
-        comment = "jupyterlab_schedule job script: {}".format(script)
+        command_prefix_portion = "echo \"`date` [Cron Running]\" >> /tmp/{}.log &&".format(cleaned_script_name)
+        command_log_portion = ">> /tmp/{}.log 2>&1".format(cleaned_script_name)
+     
+        with CronTab(user=os.environ["USER"]) as cron:
+            job = cron.new(command="{} {} {}".format(command_prefix_portion, command, command_log_portion), comment=comment)
+            job.setall(schedule)
 
-        command_log_portion = "> /tmp/{}.log 2>&1".format(cleaned_script_name)
-
-        if(str(script).endswith(".py")):
-            with CronTab(user=os.environ["USER"]) as cron:
-                job = cron.new(command="{} {}".format(script, command_log_portion), comment=comment)
-                job.setall(schedule)
-
-        elif (str(script).endswith(".ipynb")):
-            with CronTab(user=os.environ["USER"]) as cron:
-                job = cron.new(command="papermill {} /dev/null {}".format(script, command_log_portion), comment=comment)
-                job.setall(schedule)
 
         self.finish(json.dumps({"success": True}))
         return

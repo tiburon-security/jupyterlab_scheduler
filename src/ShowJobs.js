@@ -4,6 +4,15 @@ import { requestAPI } from './api';
 import React from 'react';
 
 
+/**
+ * 
+ * TODO uopdate the filter that is done when we delete... in case an exact cron job is added multiple times by accident...
+ * 
+ * 
+ * 
+ * 
+ */
+
 class Jobs extends React.Component {
 
   constructor(){
@@ -35,10 +44,10 @@ class Jobs extends React.Component {
     }
   }
 
-  async deleteJob(schedule, script){
+  async deleteJob(schedule, command){
 
     const dataToSend = { 
-      script,
+      command,
       schedule
     };
 
@@ -48,16 +57,23 @@ class Jobs extends React.Component {
         method: 'POST'
       });
 
+      // Delete the item the user selected from the state array
+      // Particulary complicated because I had to account for the fact that
+      // there may be duplicate jobs & the server is just going to remove the first instance
+      let jobIndexToRemove = null;
+      this.state.jobs.forEach((job, i)=> {
+        if(job.command === command && job.schedule === schedule && jobIndexToRemove === null){
+          jobIndexToRemove = i;
+        }
+      });
 
-      console.log(reply);
+      if(jobIndexToRemove !== null){
+        let updatedJobs = this.state.jobs.filter((job, i) => i !== jobIndexToRemove)
 
-      // delete it from the state object
-      let updatedJobs = this.state.jobs.filter(job => job.script == (script && job.schedule == schedule));
-
-      this.setState({
-        jobs:updatedJobs
-      })
-
+        this.setState({
+          jobs:updatedJobs
+        })
+      }
 
     } catch (reason) {
       console.error(
@@ -91,7 +107,7 @@ class Jobs extends React.Component {
                 <td style={{"border" : "1px solid black"}}>{job.script}</td>
                 <td style={{"border" : "1px solid black"}}>{job.command}</td>
                 <td style={{"border" : "1px solid black"}}>{job.log_file}</td>
-                <td style={{"border" : "1px solid black"}}><button onClick={()=>{this.deleteJob(job.schedule, job.script)}}>X</button></td>
+                <td style={{"border" : "1px solid black"}}><button onClick={()=>{this.deleteJob(job.schedule, job.command)}}>X</button></td>
               </tr>
             ))}
 
@@ -103,7 +119,7 @@ class Jobs extends React.Component {
 }
 
 /**
- * A Counter Lumino Widget that wraps a react component.
+ * A Lumino Widget that wraps a react component.
  */
 export class ViewScheduledJobs extends ReactWidget {
 

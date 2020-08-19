@@ -12,6 +12,8 @@ import { AddJob } from './AddJob.js';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { buildIcon, runIcon } from '@jupyterlab/ui-components';
 
+import { URLExt } from '@jupyterlab/coreutils';
+
 /**
  * Initialization data for the main menu example.
  */
@@ -26,26 +28,24 @@ const extension = {
     factory
   ) => {
     const { commands } = app;
+
     console.log('JupyterLab extension jupyterlab_scheduler is activated!');
+    console.log(app)
+
+    /**
+     * View for seeing Scheduled Jobs & Canceling them
+     */
 
     // Create a menu
     const schedulerMenu = new Menu({ commands });
     schedulerMenu.title.label = 'Cron Scheduler';
     mainMenu.addMenu(schedulerMenu, { rank: 80 });
 
-    // Create a blank content widget inside of a MainAreaWidget
-    /*const content = new Widget();
-    const widget = new MainAreaWidget({content});
-    widget.id = 'scheduled-jobs';
-    widget.title.label = 'Scheduled Cron Jobs';
-    widget.title.closable = true;*/
-
-    /**
-     * Displays for Viewing Scheduled Jobs & Canceling them
-     */
     const content = new ViewScheduledJobs();
     const widget = new MainAreaWidget({ content });
     widget.title.label = 'React Widget';
+    widget.title.closable = true;
+    widget.id = 'scheduled-jobs';
 
     // Add a command
     const command = 'show-cron';
@@ -57,10 +57,10 @@ const extension = {
           `show has been called`
         );
 
-        //if (!widget.isAttached) {
+        if (!widget.isAttached) {
           // Attach the widget to the main work area if it's not there
           app.shell.add(widget, 'main');
-        //}
+        }
 
         // Activate the widget
         app.shell.activateById(widget.id);
@@ -73,7 +73,7 @@ const extension = {
 
 
     /**
-     * Context Menu for Scheduling jobs
+     * View for Scheduling jobs
      */
 
     app.commands.addCommand('jupyterlab_scheduler/add-job:open', {
@@ -81,9 +81,10 @@ const extension = {
       caption: "Schedule Recurring Exectuion of File",
       icon: buildIcon,
       execute: () => {
-        const file = factory.tracker.currentWidget.selectedItems().next();
 
-        const addJob = new AddJob(file);
+        const file = factory.tracker.currentWidget.selectedItems().next();
+        const fullPath = app._paths.directories.serverRoot.concat("/", file.path)
+        const addJob = new AddJob(file.name, fullPath);
 
         showDialog({
           title: `Schedule Recurring Execution for: ${file.name}`,
