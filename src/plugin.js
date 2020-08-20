@@ -10,9 +10,7 @@ import { ICommandPalette, MainAreaWidget, showDialog, Dialog } from '@jupyterlab
 import { ViewScheduledJobs } from './ShowJobs.js';
 import { AddJob } from './AddJob.js';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { buildIcon, runIcon } from '@jupyterlab/ui-components';
-
-import { URLExt } from '@jupyterlab/coreutils';
+import { runIcon } from '@jupyterlab/ui-components';
 
 /**
  * Initialization data for the main menu example.
@@ -27,10 +25,9 @@ const extension = {
     mainMenu,
     factory
   ) => {
-    const { commands } = app;
+    const { shell, commands } = app;
 
     console.log('JupyterLab extension jupyterlab_scheduler is activated!');
-    console.log(app)
 
     /**
      * View for seeing Scheduled Jobs & Canceling them
@@ -41,29 +38,21 @@ const extension = {
     schedulerMenu.title.label = 'Cron Scheduler';
     mainMenu.addMenu(schedulerMenu, { rank: 80 });
 
-    const content = new ViewScheduledJobs();
-    const widget = new MainAreaWidget({ content });
-    widget.title.label = 'React Widget';
-    widget.title.closable = true;
-    widget.id = 'scheduled-jobs';
-
     // Add a command
     const command = 'show-cron';
     commands.addCommand(command, {
       label: 'Show cronjobs',
       caption: 'Show cronjobs',
       execute: (args) => {
-        console.log(
-          `show has been called`
-        );
 
-        if (!widget.isAttached) {
-          // Attach the widget to the main work area if it's not there
-          app.shell.add(widget, 'main');
-        }
+        // Create widget for displaying jobs & attach
+        const content = new ViewScheduledJobs();
+        const widget = new MainAreaWidget({ content });
+        widget.title.label = 'Scheduled Jobs';
+        widget.title.closable = true;
+        widget.id = 'scheduled-jobs';
 
-        // Activate the widget
-        app.shell.activateById(widget.id);
+        shell.add(widget, 'main');
 
       }
     });
@@ -71,17 +60,18 @@ const extension = {
     // Add the command to the menu
     schedulerMenu.addItem({ command, args: { origin: 'from the menu' } });
 
-
     /**
      * View for Scheduling jobs
      */
 
+    // Add command for scheduling a job
     app.commands.addCommand('jupyterlab_scheduler/add-job:open', {
       label: 'Schedule',
       caption: "Schedule Recurring Exectuion of File",
-      icon: buildIcon,
+      icon: runIcon,
       execute: () => {
 
+        // Create dialog for scheduling job
         const file = factory.tracker.currentWidget.selectedItems().next();
         const fullPath = app._paths.directories.serverRoot.concat("/", file.path)
         const addJob = new AddJob(file.name, fullPath);
@@ -94,6 +84,7 @@ const extension = {
       }
     });
 
+    // Add command to the context menu
     app.contextMenu.addItem({
       command: 'jupyterlab_scheduler/add-job:open',
       selector: '.jp-DirListing-item',

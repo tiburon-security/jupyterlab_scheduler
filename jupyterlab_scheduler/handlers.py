@@ -1,18 +1,15 @@
 import os
 import json
 import re
-
 from notebook.base.handlers import APIHandler
 from notebook.utils import url_path_join
-
 import tornado
 from tornado.web import StaticFileHandler
-
 from crontab import CronTab
 
 
-
 class AllJobs(APIHandler):
+
     @tornado.web.authenticated
     def get(self):
         try:
@@ -25,7 +22,7 @@ class AllJobs(APIHandler):
                 if("jupyterlab_scheduler job" in job.comment):
 
                     try:
-                        command_match = re.search(r"(?:^.*\[Cron Running\]\"\s&&)(.*?)(?:\s>>)", job.command)
+                        command_match = re.search(r"(?:^.*\[Cronjob executing\]\"\s>>.*&&\s)(.*?)(?:\s>>)", job.command)
                         command = command_match.group(1)
 
                         log_file_match = re.search(r"(?:>\s)([\/A-Za-z_]+\.log)", job.command)
@@ -78,7 +75,7 @@ class DeleteJob(APIHandler):
             for job in cron:
                 try:
 
-                    command_match = re.search(r"(?:^.*\[Cron Running\]\"\s&&)(.*?)(?:\s>>)", job.command)
+                    command_match = re.search(r"(?:^.*\[Cronjob executing\]\"\s>>.*&&\s)(.*?)(?:\s>>)", job.command)
                     command = command_match.group(1)
 
                     schedule_match = re.search(r"(((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7}", str(job))
@@ -97,12 +94,6 @@ class DeleteJob(APIHandler):
         return
         
 
-'''
-YOOOO
-
-UPDATE VIEW AND DELETE FUNCTIONS - COMMAND SYNTAX CHANGED
-
-'''
 class AddJob(APIHandler):
 
     @tornado.web.authenticated
@@ -117,7 +108,7 @@ class AddJob(APIHandler):
         cleaned_script_name = re.sub(r"[\.\s\<\>\|\\\:\(\)\&\;]", '_', script)
         comment = "jupyterlab_scheduler job script: {}".format(script)
 
-        command_prefix_portion = "echo \"`date` [Cron Running]\" >> /tmp/{}.log &&".format(cleaned_script_name)
+        command_prefix_portion = "echo \"`date` [Cronjob executing]\" >> /tmp/{}.log &&".format(cleaned_script_name)
         command_log_portion = ">> /tmp/{}.log 2>&1".format(cleaned_script_name)
      
         with CronTab(user=os.environ["USER"]) as cron:
