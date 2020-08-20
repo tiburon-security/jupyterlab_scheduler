@@ -1,17 +1,8 @@
-import { ReactWidget } from '@jupyterlab/apputils';
+import { ReactWidget, MainAreaWidget } from '@jupyterlab/apputils';
 import { requestAPI } from './api';
-
+import { ViewLog } from './ViewLog';
 import React from 'react';
 
-
-/**
- * 
- * TODO uopdate the filter that is done when we delete... in case an exact cron job is added multiple times by accident...
- * 
- * 
- * 
- * 
- */
 
 class Jobs extends React.Component {
 
@@ -28,6 +19,22 @@ class Jobs extends React.Component {
     this.getScheduledJobs()
   }
 
+
+  openLog(schedule, command){
+
+        
+        // Create widget for displaying jobs & attach
+        const content = new ViewLog(command, schedule);
+        const widget = new MainAreaWidget({ content });
+        widget.title.label = `Log - ${command}`;
+        widget.title.closable = true;
+        widget.id = 'scheduled-job-log';
+
+        this.props.shell.add(widget, 'main');
+
+      
+
+  }
 
   async getScheduledJobs() {
     try {
@@ -96,6 +103,7 @@ class Jobs extends React.Component {
               <th style={{"border" : "1px solid black"}}>Script</th>
               <th style={{"border" : "1px solid black"}}>Command</th>
               <th style={{"border" : "1px solid black"}}>Log Location</th>
+              <th style={{"border" : "1px solid black"}}>Log</th>
               <th style={{"border" : "1px solid black"}}>Delete</th>
             </tr>
           </thead>
@@ -107,7 +115,9 @@ class Jobs extends React.Component {
                 <td style={{"border" : "1px solid black"}}>{job.script}</td>
                 <td style={{"border" : "1px solid black"}}>{job.command}</td>
                 <td style={{"border" : "1px solid black"}}>{job.log_file}</td>
+                <td style={{"border" : "1px solid black"}}><button onClick={()=>{this.openLog(job.schedule, job.command)}}>View</button></td>
                 <td style={{"border" : "1px solid black"}}><button onClick={()=>{this.deleteJob(job.schedule, job.command)}}>X</button></td>
+
               </tr>
             ))}
 
@@ -123,12 +133,14 @@ class Jobs extends React.Component {
  */
 export class ViewScheduledJobs extends ReactWidget {
 
-  constructor() {
+  constructor(shell) {
     super();
     this.addClass('ReactWidget');
+    console.log("yo", shell)
+    this.shell = shell;
   }
 
   render() {
-    return <Jobs />;
+    return <Jobs dog="yo" shell={this.shell}/>;
   }
 }

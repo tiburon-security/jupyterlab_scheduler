@@ -116,7 +116,6 @@ class Component extends React.Component {
 
 
   handleSubmit(event) {
-    //alert('A job was submitted: ' + this.state.value);
     event.preventDefault();
     this.setState({submitted: true})
     this.addJob(this.state.schedule, this.props.script, this.state.command)

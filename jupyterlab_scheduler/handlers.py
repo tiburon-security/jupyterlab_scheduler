@@ -119,6 +119,48 @@ class AddJob(APIHandler):
         self.finish(json.dumps({"success": True}))
         return
 
+
+class ViewLog(APIHandler):
+    @tornado.web.authenticated
+    def get(self):
+
+        job_command = self.get_argument("command")
+        job_schedule = self.get_argument("schedule")
+
+        with CronTab(user=os.environ["USER"]) as cron:
+
+            for job in cron:
+                try:
+
+                    command_match = re.search(r"(?:^.*\[Cronjob executing\]\"\s>>.*&&\s)(.*?)(?:\s>>)", job.command)
+                    command = command_match.group(1)
+
+                    schedule_match = re.search(r"(((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7}", str(job))
+                    schedule = schedule_match.group(0)
+
+                    if(job_schedule.strip() == schedule.strip() and job_command == command):
+                        script_match = re.search(r"(?:script:\s)(.*)", job.comment)
+                        script = script_match.group(1)
+
+                        cleaned_script_name = re.sub(r"[\.\s\<\>\|\\\:\(\)\&\;]", '_', script)
+
+                        with open("/tmp/{}.log".format(cleaned_script_name)) as f:
+                            lines = f.read().splitlines()
+                            lines.reverse()
+
+                            data = lines[0:200]
+
+                            self.finish(json.dumps({"success": True, "data": data}))
+                            return
+
+
+                except AttributeError:
+                    pass
+
+        self.finish(json.dumps({"success": False}))
+        return
+
+
 def setup_handlers(web_app, url_path):
     host_pattern = ".*$"
     base_url = web_app.settings["base_url"]
@@ -127,7 +169,8 @@ def setup_handlers(web_app, url_path):
     handlers = [
         (url_path_join(base_url, url_path, "list"), AllJobs),
         (url_path_join(base_url, url_path, "add"), AddJob),
-        (url_path_join(base_url, url_path, "delete"), DeleteJob)
+        (url_path_join(base_url, url_path, "delete"), DeleteJob),
+        (url_path_join(base_url, url_path, "log"), ViewLog)
     ]
 
     web_app.add_handlers(host_pattern, handlers)

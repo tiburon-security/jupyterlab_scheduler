@@ -30,13 +30,17 @@ const extension = {
     console.log('JupyterLab extension jupyterlab_scheduler is activated!');
 
     /**
-     * View for seeing Scheduled Jobs & Canceling them
+     * Create a menu 
      */
-
-    // Create a menu
     const schedulerMenu = new Menu({ commands });
     schedulerMenu.title.label = 'Cron Scheduler';
     mainMenu.addMenu(schedulerMenu, { rank: 80 });
+
+    /**
+     * View for seeing Scheduled Jobs & Canceling them
+     */
+
+
 
     // Add a command
     const command = 'show-cron';
@@ -46,7 +50,7 @@ const extension = {
       execute: (args) => {
 
         // Create widget for displaying jobs & attach
-        const content = new ViewScheduledJobs();
+        const content = new ViewScheduledJobs(shell);
         const widget = new MainAreaWidget({ content });
         widget.title.label = 'Scheduled Jobs';
         widget.title.closable = true;
