@@ -28,6 +28,20 @@ class Component extends React.Component {
     this.cronRegex = /(((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7}/g
   }
 
+  componentDidMount(){
+
+    // Force the DOM 'change' event on the select field so that the
+    // runEnvironmentChange function is called, updating the command field
+    this.triggerInitialEnvSelection()
+  }
+
+  triggerInitialEnvSelection(){
+    const input = document.getElementById("run_environment");
+    const event = new Event("change", { bubbles: true });
+    input.dispatchEvent(event);
+  
+  }
+
   scheduleChange(event) {
 
     if(event.target.name === "schedule"){
@@ -171,7 +185,7 @@ class Component extends React.Component {
                 Run Environment:
               </div>
               <div>
-                <select value={this.state.run_evironment} name="run_environment" onChange={this.runEnvironmentChange}>
+                <select id="run_environment" value={this.state.run_evironment} name="run_environment" onChange={this.runEnvironmentChange}>
                   <option value="bash">Bash</option>
                   <option value="python">Python</option>
                   <option value="papermill">Jupyter Notebook (Papermill)</option>
