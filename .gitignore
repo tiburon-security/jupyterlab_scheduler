@@ -3,3 +3,5 @@ lib
 jupyterlab_scheduler/__pycache__
 node_modules
 .ipynb_checkpoints
+dist
+labextension

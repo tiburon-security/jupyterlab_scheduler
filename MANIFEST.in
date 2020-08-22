@@ -5,9 +5,7 @@ include pyproject.toml
 include jupyter-config/jupyterlab_scheduler.json
 
 include package.json
-include ts*.json
 include jupyterlab_scheduler/labextension/*.tgz
-graft jupyterlab_scheduler/static
 
 # Javascript files
 graft src
