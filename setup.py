@@ -95,6 +95,8 @@ setup_args = dict(
     packages=setuptools.find_packages(),
     install_requires=[
         "jupyterlab~=2.0",
+        "python-crontab~=2.5",
+        "papermill~=2.1"
     ],
     zip_safe=False,
     include_package_data=True,

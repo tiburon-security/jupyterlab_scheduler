@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "jupyterlab_scheduler",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "description": "UI for scheduling cron jobs",
   "author": "Jovanni Hrnandez",
   "main": "lib/plugin.js",
@@ -10,9 +10,6 @@
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "jupyterlab": {
-    "extension": true
-  },
   "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
       "build:all" : "npm-run-all build:lib build:extension",
@@ -49,5 +46,18 @@
     "url-loader": "^1.0.0",
     "mkdirp": "^1.0.3",
     "rimraf": "^3.0.0"
+  },
+  "jupyterlab": {
+    "discovery": {
+      "server": {
+        "managers": [
+          "pip"
+        ],
+        "base": {
+          "name": "jupyterlab_scheduler"
+        }
+      }
+    },
+    "extension": true
   }
 }
