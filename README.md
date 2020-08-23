@@ -1,11 +1,31 @@
 # jupyterlab_scheduler
 
-UI for scheduling cron jobs
+A simple plugin for scheduling files for recurring execution using the cron utility within the Jupyter Lab UI. Use cases
 
+Security Note: Cron jobs are executed under the permission set of the JupyerLab process; if you start jupyter as root (not recommended!) every job that is scheduled via the UI will also run as root.
+
+## Screenshots
+
+### Scheduling a job
+
+![Context Menu](https://raw.githubusercontent.com/tiburon-security/jupyterlab_scheduler/master/screenshots/context-menu.png)
+
+![Schedule Job](https://raw.githubusercontent.com/tiburon-security/jupyterlab_scheduler/master/screenshots/schedule-job.png)
+
+### Viewing Scheduled Jobs
+
+![Menu](https://raw.githubusercontent.com/tiburon-security/jupyterlab_scheduler/master/screenshots/main-menu.png)
+
+![Scheduled Jobs](https://raw.githubusercontent.com/tiburon-security/jupyterlab_scheduler/master/screenshots/scheduled-jobs.png)
+
+### Viewing Run Logs
+
+![View Logs](https://raw.githubusercontent.com/tiburon-security/jupyterlab_scheduler/master/screenshots/view-logs.png)
 
 ## Prerequisites
 
 * JupyterLab
+* Cron installed on the JupyterLab host
 
 ## Installation
 
