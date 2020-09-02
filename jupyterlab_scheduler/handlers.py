@@ -17,7 +17,10 @@ class AllJobs(APIHandler):
             data = []
 
             cron = CronTab(user=os.environ["USER"])
-       
+    
+            for key, value in os.environ.items():
+                cron.env[key] = value
+    
             for job in cron:
                 if("jupyterlab_scheduler job" in job.comment):
 
@@ -72,6 +75,9 @@ class DeleteJob(APIHandler):
 
         with CronTab(user=os.environ["USER"]) as cron:
 
+            for key, value in os.environ.items():
+                cron.env[key] = value
+            
             for job in cron:
                 try:
 
@@ -112,6 +118,9 @@ class AddJob(APIHandler):
         command_log_portion = ">> /tmp/{}.log 2>&1".format(cleaned_script_name)
      
         with CronTab(user=os.environ["USER"]) as cron:
+            for key, value in os.environ.items():
+                cron.env[key] = value
+            
             job = cron.new(command="{} {} {}".format(command_prefix_portion, command, command_log_portion), comment=comment)
             job.setall(schedule)
 
@@ -129,6 +138,9 @@ class ViewLog(APIHandler):
 
         with CronTab(user=os.environ["USER"]) as cron:
 
+            for key, value in os.environ.items():
+                cron.env[key] = value
+            
             for job in cron:
                 try:
 
