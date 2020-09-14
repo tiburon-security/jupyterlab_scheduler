@@ -32,7 +32,7 @@ Security Note: Cron jobs are executed under the permission set of the JupyerLab 
 To install using pip:
 
 ```bash
-pip insatll jupyterlab_scheduler
+pip install jupyterlab_scheduler
 
 jupyter labextension install jupyterlab_scheduler
 ```
