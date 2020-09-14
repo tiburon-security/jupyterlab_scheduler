@@ -48,7 +48,7 @@ class Log extends React.Component {
 
   render() {
     return (
-      <div style={{"height":"100%"}}>
+      <div style={{"height":"800px"}}>
         <LazyLog text={this.state.logs} />
       </div >
     )
