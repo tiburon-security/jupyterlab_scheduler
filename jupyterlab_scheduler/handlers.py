@@ -25,7 +25,7 @@ class AllJobs(APIHandler):
                         command_match = re.search(r"(?:^.*\[Cronjob executing\]\"\s>>.*&&\s)(.*?)(?:\s>>)", job.command)
                         command = command_match.group(1)
 
-                        log_file_match = re.search(r"(?:>\s)([\/A-Za-z_]+\.log)", job.command)
+                        log_file_match = re.search(r"(?:>\s)([\/A-Za-z_\-\d+]+\.log)", job.command)
                         log_file = log_file_match.group(1)
 
                         script_match = re.search(r"(?:script:\s)(.*)", job.comment)
