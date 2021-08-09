@@ -5,3 +5,6 @@ node_modules
 .ipynb_checkpoints
 dist
 labextension
+test-job.bs
+yarn.lock
+package-lock.json

@@ -11,7 +11,7 @@ class Log extends React.Component {
     super()
 
     this.state = {
-      jobs: []
+      logs: " "
     }
   }
 
@@ -21,11 +21,6 @@ class Log extends React.Component {
   }
 
   async getLog(schedule, command){
-
-    const dataToSend = { 
-      command,
-      schedule
-    };
 
     try {
       const reply = await requestAPI(`log?command=${command}&schedule=${schedule}`, {
@@ -40,7 +35,7 @@ class Log extends React.Component {
 
     } catch (reason) {
       console.error(
-        `Error sending delete: ${reason}`
+        `Error viewing log: ${reason}`
       );
     }
 
@@ -48,8 +43,8 @@ class Log extends React.Component {
 
   render() {
     return (
-      <div style={{"height":"800px"}}>
-        <LazyLog text={this.state.logs} />
+      <div style={{ height: 800 }}>
+        <LazyLog stream text={this.state.logs} />
       </div >
     )
   }

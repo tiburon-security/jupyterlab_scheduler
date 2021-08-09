@@ -136,11 +136,11 @@ export class ViewScheduledJobs extends ReactWidget {
   constructor(shell) {
     super();
     this.addClass('ReactWidget');
-    console.log("yo", shell)
+
     this.shell = shell;
   }
 
   render() {
-    return <Jobs dog="yo" shell={this.shell}/>;
+    return <Jobs shell={this.shell}/>;
   }
 }

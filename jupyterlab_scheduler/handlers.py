@@ -147,15 +147,34 @@ class ViewLog(APIHandler):
 
                         cleaned_script_name = re.sub(r"[\.\s\<\>\|\\\:\(\)\&\;]", '_', script)
 
-                        with open("/tmp/{}.log".format(cleaned_script_name)) as f:
-                            lines = f.read().splitlines()
-                            lines.reverse()
 
-                            data = lines[0:200]
+                        try:
 
-                            self.finish(json.dumps({"success": True, "data": data}))
+                            with open("/tmp/{}.log".format(cleaned_script_name)) as f:
+                                lines = f.read().splitlines()
+                                lines.reverse()
+
+                                data = lines[0:200]
+
+                                self.finish(json.dumps({"success": True, "data": data}))
                             return
 
+                        except FileNotFoundError as fe:
+
+                            message = [ "Unable to find log file. If the job was recently scheduled, " \
+                                "the job may not have actually run yet. Please wait until the job runs " \
+                                "before checking the log file" ]
+
+                            self.finish(json.dumps({"success": False, "data": message}))
+                            return
+
+                        except Exception as e:
+
+                            print(e)
+
+                            message = [ "Exception occured: \n\n {}".format(str(e)) ]
+                            self.finish(json.dumps({"success": False, "data": message}))
+                            return
 
                 except AttributeError:
                     pass

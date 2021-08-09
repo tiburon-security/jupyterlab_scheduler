@@ -46,7 +46,7 @@ For a development install (requires npm version 4 or later), do the following in
 # Move to jupyterlab_scheduler directory
 # Install dependencies
 npm install
-npm run build:lib
+
 # Install your development version of the extension
 jupyter labextension install .
 ```
@@ -54,22 +54,36 @@ jupyter labextension install .
 You run JupyterLab in watch mode to watch for changes in the extension's source and automatically rebuild.
 
 ```bash
-# Run jupyterlab in watch mode
-jupyter lab --watch
+
+# Run jupyterlab in watch mode & compile JS on change
+npm run watch & jupyter lab --watch
 ```
 
 Now every change will be built locally and bundled into JupyterLab. Be sure to refresh your browser page after saving file changes to reload the extension (note: you'll need to wait for webpack to finish, which can take 10s+ at times).
 
 ```bash
-# Run jupyterlab in auto reload mode
-jupyter lab  --autoreload --NotebookApp.token='' --NotebookApp.password='' --no-browser
+# Run jupyterlab in auto reload mode & compile JS on change
+npm run watch &  jupyter lab  --autoreload --NotebookApp.token='' --NotebookApp.password='' --no-browser
 ```
 
 Works better when developing server extensions
 
+Note: Make sure to close any old npm run watch jobs that may be running in the background.
+
 ## Publishing
 
-To build the plugin for disitibution on Pypi:
+Update version number in:
+
+- package.json
+- jupyterlab_scheduler/_version.py
+
+Update JavaScript files:
+
+```bash
+npm install
+```
+
+Build the server-side portion of the plugin for disitibution on Pypi:
 
 ```bash
 python3 setup.py sdist bdist_wheel
