@@ -7,6 +7,7 @@ import tornado
 from tornado.web import StaticFileHandler
 from crontab import CronTab
 
+LOG_BASE_PATH = os.environ.get("JUPYTERLAB_SCHEDULER_LOG_PATH", "/tmp")
 
 class AllJobs(APIHandler):
 
@@ -108,8 +109,8 @@ class AddJob(APIHandler):
         cleaned_script_name = re.sub(r"[\.\s\<\>\|\\\:\(\)\&\;]", '_', script)
         comment = "jupyterlab_scheduler job script: {}".format(script)
 
-        command_prefix_portion = "echo \"`date` [Cronjob executing]\" >> /tmp/{}.log &&".format(cleaned_script_name)
-        command_log_portion = ">> /tmp/{}.log 2>&1".format(cleaned_script_name)
+        command_prefix_portion = "echo \"`date` [Cronjob executing]\" >> {}/{}.log &&".format(LOG_BASE_PATH, cleaned_script_name)
+        command_log_portion = ">> {}/{}.log 2>&1".format(LOG_BASE_PATH, cleaned_script_name)
      
         with CronTab(user=os.environ["USER"]) as cron:
             for key, value in os.environ.items():
@@ -150,7 +151,7 @@ class ViewLog(APIHandler):
 
                         try:
 
-                            with open("/tmp/{}.log".format(cleaned_script_name)) as f:
+                            with open("{}/{}.log".format(LOG_BASE_PATH, cleaned_script_name)) as f:
                                 lines = f.read().splitlines()
                                 lines.reverse()
 
