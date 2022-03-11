@@ -114,7 +114,8 @@ class AddJob(APIHandler):
      
         with CronTab(user=os.environ["USER"]) as cron:
             for key, value in os.environ.items():
-                cron.env[key] = value
+                if key == "PATH":
+                    cron.env[key] = value
             
             job = cron.new(command="{} {} {}".format(command_prefix_portion, command, command_log_portion), comment=comment)
             job.setall(schedule)
