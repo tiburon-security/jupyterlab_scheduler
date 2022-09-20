@@ -71,7 +71,7 @@ const extension = {
     // Add command for scheduling a job
     app.commands.addCommand('jupyterlab_scheduler/add-job:open', {
       label: 'Schedule',
-      caption: "Schedule Recurring Exectuion of File",
+      caption: "Schedule Recurring Execution of File",
       icon: runIcon,
       execute: () => {
 
