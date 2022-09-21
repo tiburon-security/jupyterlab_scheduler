@@ -94,6 +94,7 @@ class Jobs extends React.Component {
     return (
       <div>
         <table style={{
+          "width": "95%",
           "border" : "1px solid black",
           "borderCollapse": "collapse"
         }}>

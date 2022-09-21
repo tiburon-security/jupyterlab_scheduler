@@ -1,6 +1,7 @@
 import { ReactWidget } from '@jupyterlab/apputils';
 import { requestAPI } from './api';
 import cronParser from 'cron-parser';
+import { default as path } from 'path';
 
 import React from 'react';
 
@@ -114,8 +115,8 @@ class Component extends React.Component {
           updatedCommand = `python ${this.props.script_path}`;
           break;
         case "papermill":
-          let var base = path.basename(this.props.script, '.ipynb');
-          updatedCommand = `papermill --stdout-file ${base}-out.log --stderr-file ${base}-err.log ${this.props.script_path} /dev/null`;
+          let base = path.basename(this.props.script, '.ipynb');
+          updatedCommand = `papermill --stdout-file ${base}.out --stderr-file ${base}.err ${this.props.script_path} /dev/null`;
           break;
         case "custom":
           updatedCommand = `[CUSTOM_RUN_ENVIRONMENT_GOES_HERE] ${this.props.script_path}`;
