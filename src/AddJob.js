@@ -1,6 +1,7 @@
 import { ReactWidget } from '@jupyterlab/apputils';
 import { requestAPI } from './api';
 import cronParser from 'cron-parser';
+import { default as path } from 'path';
 
 import React from 'react';
 
@@ -37,9 +38,8 @@ class Component extends React.Component {
 
   triggerInitialEnvSelection(){
     const input = document.getElementById("run_environment");
-    const event = new Event("change", { bubbles: true });
+    const event = new CustomEvent("change", { bubbles: true, detail: { initializing: true }});
     input.dispatchEvent(event);
-  
   }
 
   scheduleChange(event) {
@@ -84,7 +84,25 @@ class Component extends React.Component {
 
   runEnvironmentChange(event) {
     if(event.target.name === "run_environment"){
-      const runEnvironment = event.target.value
+      let runEnvironment = event.target.value
+
+      // Set a sensible default but user can override with the selector.
+      if (event.nativeEvent.detail && event.nativeEvent.detail.initializing) {
+          let file_extension = this.props.script.split('.').reverse()[0];
+          switch(file_extension) {
+          case "sh":
+              runEnvironment = "bash";
+              break;
+          case "py":
+              runEnvironment = "python";
+              break;
+          case "ipynb":
+              runEnvironment = "papermill";
+              break;
+          default:
+          }
+          console.log("re2: %o", runEnvironment)
+      }
 
       let updatedCommand = ''
 
@@ -97,7 +115,8 @@ class Component extends React.Component {
           updatedCommand = `python ${this.props.script_path}`;
           break;
         case "papermill":
-          updatedCommand = `papermill ${this.props.script_path} /dev/null`;
+          let base = path.basename(this.props.script, '.ipynb');
+          updatedCommand = `papermill --stdout-file ${base}.out --stderr-file ${base}.err ${this.props.script_path} /dev/null`;
           break;
         case "custom":
           updatedCommand = `[CUSTOM_RUN_ENVIRONMENT_GOES_HERE] ${this.props.script_path}`;
@@ -214,6 +233,13 @@ class Component extends React.Component {
             <div>
                 <input type="text" name="schedule" value={this.state.schedule} onChange={this.scheduleChange} />
             </div>
+              <ul style={{"margin":"0"}}>
+                  <li> minute (0 - 59)</li>
+                  <li> hour (0 - 23)</li>
+                  <li> day of month (1 - 31)</li>
+                  <li> month (1 - 12) OR jan,feb,mar,apr ...</li>
+                  <li> day of week (0 - 6) (Sunday=0 or 7) or sun,mon,tue,wed,thu,fri,sat</li>
+              </ul>
           </div>
           
           <div style={{"display":"flex","flexDirection":"row", "padding":"10px"}}>
@@ -228,7 +254,7 @@ class Component extends React.Component {
               :
               (
                 <div>
-                  <span style={{"color":"red"}}>Invalid chron syntax!</span>
+                  <span style={{"color":"red"}}>Invalid cron syntax!</span>
                 </div>
               )
             }
@@ -236,8 +262,8 @@ class Component extends React.Component {
           </div>
 
           {this.state.is_schedule_valid &&
-            <div style={{"display":"flex","flexDirection":"row", "padding":"10px"}}>
-              <ul>
+            <div style={{"display":"flex","flexDirection":"row", "padding":"0px"}}>
+              <ul style={{"margin":"0"}}>
                 
                 {this.state.schedule_examples.map((example, i) =>
                   <li key={i}>{example}</li>
