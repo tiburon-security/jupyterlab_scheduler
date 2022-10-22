@@ -94,7 +94,7 @@ setup_args = dict(
     cmdclass= cmdclass,
     packages=setuptools.find_packages(),
     install_requires=[
-        "jupyterlab~=3.1.4",
+        "jupyterlab~=3.4.2",
         "python-crontab~=2.5",
         "papermill~=2.1"
     ],
