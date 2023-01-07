@@ -57,9 +57,17 @@ RUN fix-permissions $CONDA_DIR && \
 # Set USER to the env variable jupyter uses for the default account
 ENV USER=$NB_USER
 
+RUN pip install jupyterlab_scheduler
 RUN jupyter labextension install jupyterlab_scheduler
 
 ```
+
+Note: You must manually start cron daemon, because it is not automatically started in Jupyter Docker images (Because, these imagas do not contain systemd.). Following command is an example to start cron from Docker's host:
+
+```bash
+docker exec -it -u root <container_id> service cron start
+```
+
 **Running into this error?**
 ```
 ERROR: Service 'jupyter' failed to build: The command '/bin/bash -o pipefail -c jupyter labextension install jupyterlab_scheduler' returned a non-zero code: 1
