@@ -29,24 +29,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
-Setup Module to setup Python Handlers for the jlab_ext_example extension.
+Setup Module to setup Python Handlers for the jupyterlab_scheduler extension.
 """
 import os
 from os.path import join as pjoin
 
 from jupyter_packaging import (
     create_cmdclass, install_npm, ensure_targets,
-    combine_commands, ensure_python, get_version    
+    combine_commands, get_version
 )
 import setuptools
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 # The name of the project
-name="jupyterlab_scheduler"
-
-# Ensure a valid python version
-ensure_python(">=3.5")
+name = "jupyterlab_scheduler"
 
 # Get the version
 version = get_version(pjoin(name, "_version.py"))
@@ -70,7 +67,8 @@ data_files_spec = [
      "jupyter-config", "jupyterlab_scheduler.json"),
 ]
 
-cmdclass = create_cmdclass("jsdeps",
+cmdclass = create_cmdclass(
+    "jsdeps",
     package_data_spec=package_data_spec,
     data_files_spec=data_files_spec
 )
@@ -89,12 +87,13 @@ setup_args = dict(
     url="https://github.com/tiburon-security/jupyterlab_scheduler",
     author="Jovanni Hernandez",
     description="CRON scheduler for Jupyter Lab",
-    long_description= long_description,
+    long_description=long_description,
     long_description_content_type="text/markdown",
-    cmdclass= cmdclass,
+    cmdclass=cmdclass,
     packages=setuptools.find_packages(),
+    python_requires=">=3.5",
     install_requires=[
-        "jupyterlab~=3.1.4",
+        "jupyterlab>=3.1.4,==3.*",
         "python-crontab~=2.5",
         "papermill~=2.1"
     ],
@@ -111,6 +110,8 @@ setup_args = dict(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Framework :: Jupyter",
     ],
 )
