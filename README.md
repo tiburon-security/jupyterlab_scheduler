@@ -81,9 +81,12 @@ For a development install (requires npm version 4 or later), do the following in
 ```bash
 # Clone the repo to your local environment
 # Move to jupyterlab_scheduler directory
+# Install python backend
+pip install .
 # Install dependencies
 npm install
-
+# Build the extension
+npm run build:lib
 # Install your development version of the extension
 jupyter labextension install .
 ```
